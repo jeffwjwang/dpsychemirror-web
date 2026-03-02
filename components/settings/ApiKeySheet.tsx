@@ -37,25 +37,13 @@ export function ApiKeySheet({
               可留空启用 Mock。填写后将用于调用 `/api/analyze` 与 `/api/chat`（更接近真实体验）。
             </div>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <button
-              type="button"
-              className="rounded-2xl bg-cyan-300 px-4 py-2 text-[12px] font-semibold text-slate-950"
-              onClick={() => {
-                settingsStore.set({ userApiKey: key.trim() });
-                onClose();
-              }}
-            >
-              保存
-            </button>
-            <button
-              type="button"
-              className="rounded-2xl border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-slate-100"
-              onClick={onClose}
-            >
-              关闭
-            </button>
-          </div>
+          <button
+            type="button"
+            className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] text-slate-100"
+            onClick={onClose}
+          >
+            关闭
+          </button>
         </div>
 
         <div className="mt-3 grid gap-2">
@@ -67,10 +55,20 @@ export function ApiKeySheet({
             onChange={(e) => setKey(e.target.value)}
             autoComplete="off"
           />
-          <div className="flex items-center justify-between gap-2">
+          <div className="mt-2 flex flex-col gap-2">
             <button
               type="button"
-              className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] text-red-200"
+              className="w-full rounded-2xl bg-cyan-300 px-4 py-2 text-[13px] font-semibold text-slate-950"
+              onClick={() => {
+                settingsStore.set({ userApiKey: key.trim() });
+                onClose();
+              }}
+            >
+              保存并关闭
+            </button>
+            <button
+              type="button"
+              className="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] text-red-200"
               onClick={() => {
                 settingsStore.set({ userApiKey: "" });
                 setKey("");
