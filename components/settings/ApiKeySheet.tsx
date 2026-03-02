@@ -21,12 +21,12 @@ export function ApiKeySheet({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="w-full max-w-3xl rounded-3xl border border-white/10 bg-slate-950/90 p-4 backdrop-blur-xl">
+      <div className="w-full max-w-3xl max-h-[80vh] overflow-y-auto rounded-3xl border border-white/10 bg-slate-950/90 p-4 backdrop-blur-xl">
         <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-white/15" />
         <div className="flex items-start justify-between gap-3">
           <div>
