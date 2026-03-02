@@ -1,16 +1,9 @@
-@ -1,61 +1,49 @@
 "use client";
 
 import { useEffect, useState } from "react";
 import { settingsStore } from "@/lib/storage/localStore";
 
-export function ApiKeySheet({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+export function ApiKeySheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [key, setKey] = useState("");
 
   useEffect(() => {
@@ -31,31 +24,10 @@ export function ApiKeySheet({
         <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-white/15" />
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-[14px] font-semibold text-slate-50">
-              Gemini API Key
-            </div>
+            <div className="text-[14px] font-semibold text-slate-50">Gemini API Key</div>
             <div className="mt-1 text-[12px] text-slate-300">
               可留空启用 Mock。填写后将用于调用 `/api/analyze` 与 `/api/chat`（更接近真实体验）。
             </div>
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            <button
-              type="button"
-              className="rounded-2xl bg-cyan-300 px-4 py-2 text-[12px] font-semibold text-slate-950"
-              onClick={() => {
-                settingsStore.set({ userApiKey: key.trim() });
-                onClose();
-              }}
-            >
-              保存
-            </button>
-            <button
-              type="button"
-              className="rounded-2xl border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-slate-100"
-              onClick={onClose}
-            >
-              关闭
-            </button>
           </div>
           <button
             type="button"
@@ -67,11 +39,14 @@ export function ApiKeySheet({
         </div>
 
         <div className="mt-3 grid gap-2">
-@ -67,22 +55,32 @@
+          <input
+            className="w-full rounded-2xl border border-white/10 bg-black/20 px-3 py-2 text-[12px] text-slate-100 outline-none"
+            placeholder="例如：AIza..."
+            type="password"
+            value={key}
             onChange={(e) => setKey(e.target.value)}
             autoComplete="off"
           />
-          <div className="flex items-center justify-between gap-2">
           <div className="mt-2 flex flex-col gap-2">
             <button
               type="button"
@@ -85,10 +60,9 @@ export function ApiKeySheet({
             </button>
             <button
               type="button"
-              className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] text-red-200"
               className="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] text-red-200"
               onClick={() => {
-                settingsStore.set({ userApiKey: "" });
+                settingsStore.set({ userApiKey: "");
                 setKey("");
               }}
             >
@@ -100,4 +74,3 @@ export function ApiKeySheet({
     </div>
   );
 }
-
