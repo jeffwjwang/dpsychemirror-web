@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { settingsStore } from "@/lib/storage/localStore";
 
-export function ApiKeySheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function ApiKeySheet({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
   const [key, setKey] = useState("");
 
   useEffect(() => {
@@ -24,7 +30,9 @@ export function ApiKeySheet({ open, onClose }: { open: boolean; onClose: () => v
         <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-white/15" />
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-[14px] font-semibold text-slate-50">Gemini API Key</div>
+            <div className="text-[14px] font-semibold text-slate-50">
+              Gemini API Key
+            </div>
             <div className="mt-1 text-[12px] text-slate-300">
               可留空启用 Mock。填写后将用于调用 `/api/analyze` 与 `/api/chat`（更接近真实体验）。
             </div>
@@ -62,7 +70,7 @@ export function ApiKeySheet({ open, onClose }: { open: boolean; onClose: () => v
               type="button"
               className="w-full rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] text-red-200"
               onClick={() => {
-                settingsStore.set({ userApiKey: "");
+                settingsStore.set({ userApiKey: "" });
                 setKey("");
               }}
             >
@@ -74,3 +82,4 @@ export function ApiKeySheet({ open, onClose }: { open: boolean; onClose: () => v
     </div>
   );
 }
+
