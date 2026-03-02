@@ -37,13 +37,25 @@ export function ApiKeySheet({
               可留空启用 Mock。填写后将用于调用 `/api/analyze` 与 `/api/chat`（更接近真实体验）。
             </div>
           </div>
-          <button
-            type="button"
-            className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] text-slate-100"
-            onClick={onClose}
-          >
-            关闭
-          </button>
+          <div className="flex flex-col items-end gap-2">
+            <button
+              type="button"
+              className="rounded-2xl bg-cyan-300 px-4 py-2 text-[12px] font-semibold text-slate-950"
+              onClick={() => {
+                settingsStore.set({ userApiKey: key.trim() });
+                onClose();
+              }}
+            >
+              保存
+            </button>
+            <button
+              type="button"
+              className="rounded-2xl border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-slate-100"
+              onClick={onClose}
+            >
+              关闭
+            </button>
+          </div>
         </div>
 
         <div className="mt-3 grid gap-2">
@@ -65,16 +77,6 @@ export function ApiKeySheet({
               }}
             >
               清除（Mock）
-            </button>
-            <button
-              type="button"
-              className="rounded-2xl bg-cyan-300 px-4 py-2 text-[12px] font-semibold text-slate-950"
-              onClick={() => {
-                settingsStore.set({ userApiKey: key.trim() });
-                onClose();
-              }}
-            >
-              保存
             </button>
           </div>
         </div>
