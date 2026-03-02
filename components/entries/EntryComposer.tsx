@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { BlobRecord, Entry, EntryModule } from "@/types/psyche";
 import { analyzeEntry } from "@/lib/ai/client";
 import { blobsStore, entriesStore } from "@/lib/storage/localStore";
@@ -35,11 +35,59 @@ export function EntryComposer({ module, onCreated }: { module: EntryModule; onCr
   const [audio, setAudio] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string>("");
+  const [recording, setRecording] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const attachmentCount = useMemo(
     () => images.length + pdfs.length + (audio ? 1 : 0),
     [images.length, pdfs.length, audio]
   );
+
+  async function toggleRecording() {
+    if (recording) {
+      const mr = mediaRecorderRef.current;
+      if (mr && mr.state !== "inactive") {
+        mr.stop();
+      }
+      setRecording(false);
+      return;
+    }
+
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setStatus("当前浏览器不支持录音，请改用上传音频文件。");
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mr = new MediaRecorder(stream);
+      mediaRecorderRef.current = mr;
+      audioChunksRef.current = [];
+      setAudio(null);
+      setRecording(true);
+      setStatus("录音中… 再次点击结束。");
+
+      mr.ondataavailable = (ev) => {
+        if (ev.data && ev.data.size > 0) {
+          audioChunksRef.current.push(ev.data);
+        }
+      };
+      mr.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const file = new File([blob], "voice.webm", { type: blob.type });
+        setAudio(file);
+        setStatus("录音已保存，可提交。");
+        stream.getTracks().forEach((t) => t.stop());
+      };
+
+      mr.start();
+    } catch (e) {
+      console.error(e);
+      setStatus("录音失败：请检查麦克风权限。");
+      setRecording(false);
+    }
+  }
 
   async function onSubmit() {
     if (!text.trim() && attachmentCount === 0) return;
@@ -52,12 +100,20 @@ export function EntryComposer({ module, onCreated }: { module: EntryModule; onCr
 
       const firstImage = images[0] || null;
       const imageBase64 = firstImage ? await fileToBase64(firstImage) : null;
+      const firstPdf = pdfs[0] || null;
+      const pdfBase64 = firstPdf ? await fileToBase64(firstPdf) : null;
+      const audioFile = audio;
+      const audioBase64 = audioFile ? await fileToBase64(audioFile) : null;
 
       const analysis = await analyzeEntry({
         module,
         text: text.trim(),
         imageBase64,
         imageMimeType: firstImage?.type || null,
+        pdfBase64,
+        pdfMimeType: firstPdf?.type || null,
+        audioBase64,
+        audioMimeType: audioFile?.type || null,
       });
 
       const analysis_v1 = {
@@ -206,16 +262,23 @@ export function EntryComposer({ module, onCreated }: { module: EntryModule; onCr
               onChange={(e) => setPdfs(Array.from(e.target.files || []))}
             />
           </label>
-          <label className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-center text-[11px] text-slate-100">
-            语音（文件）
-            <input
-              className="hidden"
-              type="file"
-              accept="audio/*"
-              capture
-              onChange={(e) => setAudio((e.target.files || [])[0] || null)}
-            />
-          </label>
+          <div className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-center text-[11px] text-slate-100 flex flex-col items-center justify-center gap-1">
+            <button
+              type="button"
+              className="w-full rounded-2xl bg-cyan-300/90 px-3 py-1.5 text-[11px] font-semibold text-slate-950 disabled:opacity-60"
+              onClick={toggleRecording}
+              disabled={busy}
+            >
+              {recording ? "停止录音" : "点击录音"}
+            </button>
+            <div className="text-[10px] text-slate-300">
+              {audio
+                ? "已附加一段语音"
+                : recording
+                ? "录音中… 再点一次结束"
+                : "可选：快速说完当下感受"}
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center justify-between gap-2">
