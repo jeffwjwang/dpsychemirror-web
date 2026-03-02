@@ -23,9 +23,12 @@ type Settings = {
   userApiKey?: string;
 };
 
+const IS_BROWSER = typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+
 function readJson<T>(key: string, fallback: T): T {
+  if (!IS_BROWSER) return fallback;
   try {
-    const raw = localStorage.getItem(key);
+    const raw = window.localStorage.getItem(key);
     if (!raw) return fallback;
     return JSON.parse(raw) as T;
   } catch {
@@ -34,7 +37,12 @@ function readJson<T>(key: string, fallback: T): T {
 }
 
 function writeJson<T>(key: string, value: T) {
-  localStorage.setItem(key, JSON.stringify(value));
+  if (!IS_BROWSER) return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // ignore storage errors in non-browser or quota issues
+  }
 }
 
 export const settingsStore = {
