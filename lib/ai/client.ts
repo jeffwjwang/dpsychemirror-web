@@ -8,6 +8,10 @@ export async function analyzeEntry(input: {
   text: string;
   imageBase64?: string | null;
   imageMimeType?: string | null;
+  pdfBase64?: string | null;
+  pdfMimeType?: string | null;
+  audioBase64?: string | null;
+  audioMimeType?: string | null;
 }): Promise<AnalyzeResult> {
   const s = settingsStore.get();
   const res = await fetch("/api/analyze", {
